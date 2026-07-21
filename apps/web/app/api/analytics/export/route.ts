@@ -17,7 +17,7 @@ import { getPlanCapabilities } from "@/lib/plan-capabilities";
 import { ratelimit } from "@/lib/upstash";
 import { parseAnalyticsQuery } from "@/lib/zod/schemas/analytics";
 
-export const maxDuration = 10;
+export const maxDuration = 300;
 
 // GET /api/analytics/export – get export data for analytics
 export const GET = withWorkspace(

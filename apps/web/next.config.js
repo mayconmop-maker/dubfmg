@@ -24,13 +24,6 @@ module.exports = withPlausibleProxy({
   apiPath: "/_proxy/plausible/event",
 })({
   reactStrictMode: false,
-  // Lower memory/CPU during Vercel Hobby builds (OOM / timeout)
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   transpilePackages: [
     "prettier",
     "shiki",
@@ -44,7 +37,6 @@ module.exports = withPlausibleProxy({
     ],
   },
   experimental: {
-    cpus: 1,
     optimizePackageImports: [
       "@dub/email",
       "@dub/ui",
