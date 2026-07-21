@@ -1,4 +1,8 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && NODE_OPTIONS=--max-old-space-size=7168 pnpm turbo run build --filter=web --concurrency=1 --no-daemon",
+  "framework": "nextjs",
   "crons": [
     {
       "path": "/api/cron/queue/retry",

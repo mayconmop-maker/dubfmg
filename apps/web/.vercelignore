@@ -1,0 +1,6 @@
+tests
+playwright
+scripts
+**/*.md
+playwright-report
+test-results

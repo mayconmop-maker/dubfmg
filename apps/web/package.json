@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm prisma:generate && concurrently --kill-others \"next dev --turbopack --port 8888\"",
     "build": "pnpm prisma:generate && next build",
+    "build:vercel": "prisma generate --schema=./prisma/schema && next build",
     "lint": "next lint",
     "start": "next start",
     "script": "tsx ./scripts/run.ts",
@@ -13,7 +14,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "generate-openapi": "tsx ./scripts/generate-openapi.ts",
-    "prisma:generate": "dotenv-flow -e .env -- prisma generate --schema=./prisma/schema",
+    "prisma:generate": "prisma generate --schema=./prisma/schema",
     "prisma:push": "dotenv-flow -e .env -- prisma db push --schema=./prisma/schema",
     "prisma:studio": "dotenv-flow -e .env -- prisma studio --schema=./prisma/schema --browser none",
     "prisma:format": "dotenv-flow -e .env -- prisma format --schema=./prisma/schema"
