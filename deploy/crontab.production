@@ -1,0 +1,39 @@
+# Cron jobs for a self-hosted, single-workspace Dub deployment.
+#
+# This is a trimmed-down version of apps/web/vercel.json: it drops every job
+# tied to the partner program / affiliate / payouts / bounty features, which
+# this deployment doesn't use.
+#
+# IMPORTANT — security: apps/web/lib/cron/verify-vercel.ts only checks
+# CRON_SECRET when process.env.VERCEL === "1". On a self-hosted server that
+# env var is never set, so these /api/cron/* routes are UNAUTHENTICATED.
+# Hit them on localhost only (never through the public domain), and make
+# sure your reverse proxy (Nginx/Caddy/Traefik) blocks external requests to
+# /api/cron/* — see SELF_HOSTING_VPS.md.
+#
+# Install with: crontab deploy/crontab.production
+# (adjust the port if your app container publishes something other than 3000)
+
+APP_URL=http://127.0.0.1:3000
+
+0 * * * * curl -fsS -X GET "$APP_URL/api/cron/domains/verify" >/dev/null 2>&1
+0 * * * * curl -fsS -X GET "$APP_URL/api/cron/email-domains/verify" >/dev/null 2>&1
+* * * * * curl -fsS -X GET "$APP_URL/api/cron/streams/send-link-clicked-webhooks" >/dev/null 2>&1
+* * * * * curl -fsS -X GET "$APP_URL/api/cron/streams/update-workspace-clicks" >/dev/null 2>&1
+* * * * * curl -fsS -X GET "$APP_URL/api/cron/streams/update-workspace-links-usage" >/dev/null 2>&1
+*/5 * * * * curl -fsS -X GET "$APP_URL/api/cron/webhooks/sync-click-workspaces" >/dev/null 2>&1
+* * * * * curl -fsS -X GET "$APP_URL/api/cron/queue/retry" >/dev/null 2>&1
+
+# Not included on purpose (partner program / payouts / bounties / billing,
+# unused in this internal deployment):
+#   domains/renewal-reminders, domains/renewal-payments (Dub's own domain
+#     resale via Dynadot)
+#   streams/update-partner-stats, partner-platforms/website,
+#     partner-program-summary, pending-applications-summary
+#   trial-emails (Stripe trial billing)
+#   payouts/aggregate-due-commissions, trigger-withdrawal,
+#     payouts/force-withdrawals, payouts/reminders/*
+#   bounties/queue-sync-social-metrics
+#   sitemaps/queue (public partner-program landing pages)
+#   trigger-backup (Dub Inc.'s internal PlanetScale backup job — set up
+#     your own `mysqldump` cron against the `mysql` container instead)

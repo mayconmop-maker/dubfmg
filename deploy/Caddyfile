@@ -1,0 +1,13 @@
+# Reverse proxy + automatic HTTPS (Let's Encrypt) for the self-hosted app.
+# Copy to /etc/caddy/Caddyfile on the VPS and replace the domain below.
+#
+# Blocks external access to /api/cron/*, since those routes have no auth
+# when self-hosted (see deploy/crontab.production) — only the crontab
+# running on localhost should be able to reach them.
+
+links.suaempresa.com.br {
+    @cron path /api/cron/*
+    respond @cron 404
+
+    reverse_proxy 127.0.0.1:3000
+}

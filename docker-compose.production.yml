@@ -1,0 +1,61 @@
+# Self-hosted production stack for Dub.
+#
+# Important: apps/web/middleware.ts runs on the Next.js Edge Runtime (for the
+# link-redirect + click-tracking path), which cannot open a raw MySQL TCP
+# connection. It talks to the database through @prisma/adapter-planetscale,
+# an HTTP-based protocol. That's why `planetscale-proxy` (ps-http-sim) is
+# required even outside local dev: it translates that HTTP protocol into
+# real MySQL queries against `mysql`. ps-http-sim has NO authentication, so
+# it must stay off any published port and only be reachable on the internal
+# docker network — never put it behind the reverse proxy.
+#
+# Usage: docker compose -f docker-compose.production.yml --env-file .env.production up -d
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        DATABASE_URL: "mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/dub"
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      DATABASE_URL: "mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/dub"
+      PLANETSCALE_DATABASE_URL: "http://root:${MYSQL_ROOT_PASSWORD}@planetscale-proxy:3900/dub"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - mysql
+      - planetscale-proxy
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: dub
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+    command:
+      [
+        "--max_connections=1000",
+        "--default-authentication-plugin=mysql_native_password",
+      ]
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  planetscale-proxy:
+    image: ghcr.io/mattrobenolt/ps-http-sim:latest
+    restart: unless-stopped
+    command:
+      [
+        "-listen-addr=0.0.0.0",
+        "-listen-port=3900",
+        "-mysql-addr=mysql",
+        "-mysql-dbname=dub",
+      ]
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:
