@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { exchangeAuthCodeForToken } from "./exchange-code-for-token";
 import { refreshAccessToken } from "./refresh-access-token";
 
-export const maxDuration = 30;
+export const maxDuration = 10;
 
 // POST /api/oauth/token - Exchange authorization code for access token and refresh access token
 export async function POST(req: NextRequest) {

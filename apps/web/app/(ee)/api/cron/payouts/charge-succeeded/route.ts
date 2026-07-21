@@ -12,7 +12,7 @@ import { sendPaypalPayouts } from "./send-paypal-payouts";
 import { getFundSettlementTiming, scheduleDelayedPayouts } from "./utils";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // Vercel max duration (Hobby/Pro cap is 300s)
+export const maxDuration = 10; // Hobby plan max (10s)
 
 const payloadSchema = z.object({
   invoiceId: z.string(),

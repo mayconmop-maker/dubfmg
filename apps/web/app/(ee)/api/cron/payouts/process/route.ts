@@ -9,7 +9,7 @@ import { processPayouts } from "./process-payouts";
 import { splitPayouts } from "./split-payouts";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // Vercel max duration (Hobby/Pro cap is 300s)
+export const maxDuration = 10; // Hobby plan max (10s)
 
 const processPayoutsCronSchema = z.object({
   workspaceId: z.string(),

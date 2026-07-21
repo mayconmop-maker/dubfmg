@@ -19,7 +19,7 @@ import { ratelimit } from "@/lib/upstash";
 import { partnerProfileAnalyticsQuerySchema } from "@/lib/zod/schemas/partner-profile";
 import { parseFilterValue, toCentsNumber } from "@dub/utils";
 
-export const maxDuration = 300;
+export const maxDuration = 10;
 
 // GET /api/partner-profile/programs/[programId]/analytics/export – get export data for partner profile analytics
 export const GET = withPartnerProfile(
